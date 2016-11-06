@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta content="utf-8">
+    <title>helo</title>
+</head>
+<body>
+    <p>Apple</p>
+    <p>Pear</p>
+    <p>banana</p>
+    <script src = "http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+        var width = 300;
+        var height = 300;
+        var dataset = [250,210,170,130,90]
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width",width)
+            .attr("height",height);
+        var rectHeight = 25;
+        svg.selectAll("rect")
+            .data(dataset)
+            .enter()
+            .append("rect")
+            .attr("x",0)
+            .attr("y",function(d,i){return i * rectHeight})
+            .attr("width",function(d){return d})
+            .attr("height",rectHeight - 2)
+            .attr("fill","steelblue");
+    </script>
+</body>
+</html>
