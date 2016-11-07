@@ -5,7 +5,7 @@ import re
 from Queue import Queue
 
 SHARE_Q = Queue()
-_WORKER_THREAD_NUM = 10
+_WORKER_THREAD_NUM =100
 
 
 
@@ -21,6 +21,7 @@ class MyThread(threading.Thread) :
 
 def getpopinfo():
     global SHARE_Q
+    global mutex
     thread_id_sub_str = ''
     user_info = ''
     subject_info = ''
@@ -30,7 +31,7 @@ def getpopinfo():
         line_num = SHARE_Q.get()
         # print 'start' + str(line_num) + '\n'
         file_in_t = open('C:\\git\\getpopinfo\\console.log', 'r')
-        file_out_t = open('C:\\git\\getpopinfo\\result.txt','a')
+
         m=0
         for line in file_in_t:
             m = m + 1
@@ -51,22 +52,26 @@ def getpopinfo():
                 if 'S:  Subject:' in line:
                     subject_info = re.search('S:(.*?)<CRLF>',line,0).group(1)
                     print user_info + ',' + time_info + ',' + ip_info + ',' + subject_info+'\n'
+                    mutex.acquire()
+                    file_out_t = open('C:\\git\\getpopinfo\\result.txt', 'a')
+                    file_out_t.write(user_info + ',' + time_info + ',' + ip_info + ',' + subject_info)
+                    file_out_t.write('\n')
+                    file_out_t.close()
+                    mutex.release()
 
 
                 if 'R:  QUIT' in line:
                     # print thread_id_sub_str + 'end ' + str(m) + '\n'
-
-                    # file_out_t.write(subject_info+','+user_info+','+time_info+','+ip_info)
-                    # file_out_t.write('\n')
-
                     file_in_t.close()
-                    file_out_t.close()
+
                     return 0
 
 
 def main():
     global SHARE_Q
+    global mutex
     threads = []
+    mutex = threading.Lock()
     file_in = open('C:\git\getpopinfo\console.log','r')
     n = 0
     for line in file_in:
